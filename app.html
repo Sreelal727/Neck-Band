@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Band Data</title>
+    <script>
+        // Function to refresh the page every 5 seconds
+        setInterval(function() {
+            location.reload();
+        }, 5000);
+
+        // Function to fetch and display ThingSpeak data
+        function fetchData() {
+            // Replace 'YOUR_CHANNEL_ID' with the actual ThingSpeak channel ID
+            var channel_id = '688293';
+            var url = "https://api.thingspeak.com/channels/" + channel_id + "/feeds.json?results=1";
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.feeds && data.feeds.length > 0) {
+                        var fields = Object.keys(data.feeds[0]).filter(key => key.startsWith('field')).slice(0, 5);
+                        var values = fields.map(field => data.feeds[0][field]);
+
+                        var table = document.getElementById("data-table");
+                        var row = table.insertRow(1);
+
+                        values.forEach(value => {
+                            var cell = row.insertCell();
+                            cell.innerHTML = value;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Call fetchData on page load
+        window.onload = function() {
+            fetchData();
+        };
+    </script>
+    <style>
+        body {
+            text-align: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Smart Band Data</h1>
+
+<table id="data-table">
+    <thead>
+        <tr>
+            <th>Field 1</th>
+            <th>Field 2</th>
+            <th>Field 3</th>
+            <th>Field 4</th>
+            <th>Field 5</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be dynamically added here -->
+    </tbody>
+</table>
+
+</body>
+</html>
